@@ -2,11 +2,11 @@
 
 #
 #
-#          genSeqErrorModel.py
-#          Computes sequencing error model for gen_reads.py
+#          genSeqErrorModel.python
+#          Computes sequencing error model for gen_reads.python
 #
 #         
-#          Usage: python genSeqErrorModel.py -i input_reads.fq -o path/to/output_name.p
+#          Usage: python genSeqErrorModel.python -i input_reads.fq -o path/to/output_name.p
 #
 #
 # Python 3 ready
@@ -17,14 +17,14 @@ import gzip
 import numpy as np
 import argparse
 import sys
+import pathlib
 import pickle
 import matplotlib.pyplot as mpl
 
-# # absolute path to this script
-# sim_path = '/'.join(os.path.realpath(__file__).split('/')[:-2]) + '/py/'
-# sys.path.append(sim_path)
+# enables import from neighboring package
+sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
 
-from py.probability import DiscreteDistribution
+from python.probability import DiscreteDistribution
 
 
 def parse_fq(inf, real_q, off_q, max_reads, n_samp, plot_stuff):
@@ -231,7 +231,7 @@ def parse_fq(inf, real_q, off_q, max_reads, n_samp, plot_stuff):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='genSeqErrorModel.py')
+    parser = argparse.ArgumentParser(description='genSeqErrorModel.python')
     parser.add_argument('-i', type=str, required=True, metavar='<str>', help="* input_read1.fq (.gz) / input_read1.sam")
     parser.add_argument('-o', type=str, required=True, metavar='<str>', help="* output.p")
     parser.add_argument('-i2', type=str, required=False, metavar='<str>', default=None,
