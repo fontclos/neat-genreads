@@ -84,7 +84,7 @@ def parse_fq(inf, real_q, off_q, max_reads, n_samp, plot_stuff):
             continue
 
         for i in range(len(data4) - 1):
-            q = data4[i] - off_q
+            q = ord(data4[i]) - off_q
             q_dict[q] = True
             prev_q = q
             if i == 0:
