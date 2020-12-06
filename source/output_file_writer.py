@@ -1,10 +1,5 @@
-import sys
-import os
 import re
-import gzip
 from struct import pack
-from Bio.Seq import Seq
-from Bio import SeqIO
 import gzip
 from Bio.bgzf import *
 import pathlib
@@ -90,7 +85,7 @@ BUFFER_BATCH_SIZE = 1000  # write out to file after this many reads
 
 # TODO find a better way to write output files
 class OutputFileWriter:
-    def __init__(self, out_prefix, paired=False, bam_header=None, vcf_header=None, gzipped=False,
+    def __init__(self, out_prefix, paired=False, bam_header=None, vcf_header=None,
                  no_fastq=False, fasta_instead=False):
 
         self.fasta_instead = fasta_instead
@@ -107,25 +102,16 @@ class OutputFileWriter:
         # TODO Make a fasta-specific method
         self.no_fastq = no_fastq
         if not self.no_fastq:
-            if gzipped:
-                self.fq1_file = gzip.open(fq1.with_suffix(fq1.suffix + '.gz'), 'wb')
-            else:
-                self.fq1_file = open(fq1, 'w')
+            self.fq1_file = gzip.open(fq1, 'w')
 
             self.fq2_file = None
             if paired:
-                if gzipped:
-                    self.fq2_file = gzip.open(fq2.with_suffix(fq2.suffix + '.gz'), 'wb')
-                else:
-                    self.fq2_file = open(fq2, 'w')
+                self.fq2_file = gzip.open(fq2, 'w')
 
         # VCF OUTPUT
         self.vcf_file = None
         if vcf_header is not None:
-            if gzipped:
-                self.vcf_file = gzip.open(vcf.with_suffix(vcf.suffix + '.gz'), 'wb')
-            else:
-                self.vcf_file = open(vcf, 'wb')
+            self.vcf_file = gzip.open(vcf, 'w')
 
             # WRITE VCF HEADER
             self.vcf_file.write('##fileformat=VCFv4.1\n'.encode('utf-8'))
@@ -286,9 +272,9 @@ class OutputFileWriter:
                 len(self.fq1_buffer) and last_time) or (len(self.bam_buffer) and last_time):
             # fq
             if not self.no_fastq:
-                self.fq1_file.write(''.join(self.fq1_buffer))
+                self.fq1_file.write(''.join(self.fq1_buffer).encode())
                 if len(self.fq2_buffer):
-                    self.fq2_file.write(''.join(self.fq2_buffer))
+                    self.fq2_file.write(''.join(self.fq2_buffer).encode())
             # bam
             if len(self.bam_buffer):
                 bam_data = sorted(self.bam_buffer)

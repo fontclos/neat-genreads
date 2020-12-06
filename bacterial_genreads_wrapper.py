@@ -8,6 +8,7 @@ import gzip
 import shutil
 import sys
 import copy
+import time
 # from Bio import SeqIO
 
 
@@ -46,6 +47,7 @@ class Bacterium:
         """
         args = ['-r', str(self.reference), '-R', '101', '-o', self.name, '--fa', '-c', '1']
         gen_reads.main(args)
+        print(f'\nGenerating fast {self.name}.fasta.gz\n')
         self.file = pathlib.Path().absolute() / (self.name + ".fasta.gz")
 
         # The following workaround is due to the fact that genReads cannot handle gzipped
@@ -77,7 +79,7 @@ class Bacterium:
                             else:
                                 continue
                     if not chromosome_name:
-                        print("Something went wrong with the generated fasta file.\n")
+                        print("Bug: Something went wrong with the generated fasta file.\n")
                         sys.exit(1)
                 else:
                     sequence = sequence + line
@@ -95,7 +97,7 @@ class Bacterium:
         """
         args = ['-r', str(self.file), '-M', '0', '-R', '101', '-o', self.name,
                 '-c', str(coverage_value), '--pe', str(fragment_size), str(fragment_std), '--vcf', '--bam']
-
+        print(f'\nSampling {self.name}\n')
         gen_reads.main(args)
 
     def remove(self):
@@ -104,6 +106,7 @@ class Bacterium:
         :return: None
         """
         try:
+            print(f'\nRemoving {self.file}')
             pathlib.Path.unlink(self.file)
         except FileExistsError:
             print('\nThere was a problem deleting a file\n')
@@ -149,7 +152,8 @@ def initialize_population(reference: str, pop_size: int, chrom_names: list) -> l
     """
     names = []
     for j in range(pop_size):
-        names.append("bacterium_0_{}".format(j+1))
+        names.append(f"bacterium_0_{j+1}")
+        print(f"bacterium_0_{j+1}")
     population = []
     for i in range(pop_size):
         new_member = Bacterium(reference, names[i], chrom_names)
@@ -170,6 +174,7 @@ def evolve_population(population: list, generation: int) -> list:
     new_population = []
     for j in range(len(children_population)):
         names.append("bacterium_{}_{}".format(generation, j+1))
+    print(f'Generating children: {names}')
     for i in range(len(children_population)):
         child = Bacterium(children_population[i].get_file(), names[i], children_population[i].get_chroms())
         new_population.append(child)
@@ -213,6 +218,7 @@ def extract_names(reference: str) -> list:
 
 
 def main():
+    start_time = time.time()
     parser = argparse.ArgumentParser(description='bacterial_genreads_wrapper.python')
     parser.add_argument('-r', type=str, required=True, metavar='reference.fasta',
                         help="Reference file for organism in fasta format")
@@ -249,6 +255,7 @@ def main():
         population = new_population
 
     sample_population(population, coverage, fragment_size, fragment_std)
+    print(f'--- {(time.time() - start_time)} seconds ---')
 
 
 if __name__ == '__main__':

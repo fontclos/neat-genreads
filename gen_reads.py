@@ -25,12 +25,12 @@ import numpy as np
 import argparse
 import pathlib
 
-from python.input_checking import check_file_open, is_in_range
-from python.ref_func import index_ref, read_ref
-from python.vcf_func import parse_vcf
-from python.output_file_writer import OutputFileWriter, reverse_complement, sam_flag
-from python.probability import DiscreteDistribution, mean_ind_of_weighted_list
-from python.SequenceContainer import SequenceContainer, SequencingError, parse_input_mutation_model
+from source.input_checking import check_file_open, is_in_range
+from source.ref_func import index_ref, read_ref
+from source.vcf_func import parse_vcf
+from source.output_file_writer import OutputFileWriter, reverse_complement, sam_flag
+from source.probability import DiscreteDistribution, mean_ind_of_weighted_list
+from source.SequenceContainer import SequenceContainer, SequencingError, parse_input_mutation_model
 
 """
 Some constants needed for analysis
@@ -91,8 +91,6 @@ def main(raw_args=None):
                         help='rng seed value; identical RNG value should produce identical runs of the program, so '
                              'things like read locations, variant positions, error positions, etc, '
                              'should all be the same.')
-    # TODO check if this argument does anything at all. Near as I can tell the results are ALWAYS gzipped.
-    parser.add_argument('--gz', required=False, action='store_true', default=False, help='gzip output FQ and VCF')
     parser.add_argument('--no-fastq', required=False, action='store_true', default=False,
                         help='bypass fastq generation')
     parser.add_argument('--discard-offtarget', required=False, action='store_true', default=False,
@@ -124,8 +122,8 @@ def main(raw_args=None):
     (off_target_scalar, off_target_discard, force_coverage, rescale_qual) = (args.to, args.discard_offtarget,
                           args.force_coverage, args.rescale_qual)
     # important flags
-    (save_bam, save_vcf, fasta_instead, gzipped_out, no_fastq) = \
-        (args.bam, args.vcf, args.fa, args.gz, args.no_fastq)
+    (save_bam, save_vcf, fasta_instead, no_fastq) = \
+        (args.bam, args.vcf, args.fa, args.no_fastq)
 
     # sequencing model parameters
     (fragment_size, fragment_std) = args.pe
@@ -383,15 +381,14 @@ def main(raw_args=None):
     # TODO figure out how to do this more efficiently. Write the files at the end.
     if cancer:
         output_file_writer = OutputFileWriter(out_prefix + '_normal', paired=paired_end, bam_header=bam_header,
-                                              vcf_header=vcf_header,
-                                              gzipped=gzipped_out, no_fastq=no_fastq, fasta_instead=fasta_instead)
+                                              vcf_header=vcf_header, no_fastq=no_fastq, fasta_instead=fasta_instead)
         output_file_writer_cancer = OutputFileWriter(out_prefix + '_tumor', paired=paired_end, bam_header=bam_header,
-                                                     vcf_header=vcf_header, gzipped=gzipped_out,
+                                                     vcf_header=vcf_header,
                                                      no_fastq=no_fastq, fasta_instead=fasta_instead)
     else:
         output_file_writer = OutputFileWriter(out_prefix, paired=paired_end, bam_header=bam_header,
                                               vcf_header=vcf_header,
-                                              gzipped=gzipped_out, no_fastq=no_fastq,
+                                              no_fastq=no_fastq,
                                               fasta_instead=fasta_instead)
     # Using pathlib to make this more machine agnostic
     out_prefix_name = pathlib.Path(out_prefix).name
