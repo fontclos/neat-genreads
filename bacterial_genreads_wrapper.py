@@ -8,7 +8,7 @@ import gzip
 import shutil
 import sys
 import copy
-import time
+from time import time
 # from Bio import SeqIO
 
 
@@ -218,7 +218,6 @@ def extract_names(reference: str) -> list:
 
 
 def main():
-    start_time = time.time()
     parser = argparse.ArgumentParser(description='bacterial_genreads_wrapper.python')
     parser.add_argument('-r', type=str, required=True, metavar='reference.fasta',
                         help="Reference file for organism in fasta format")
@@ -255,8 +254,9 @@ def main():
         population = new_population
 
     sample_population(population, coverage, fragment_size, fragment_std)
-    print(f'--- {(time.time() - start_time)} seconds ---')
 
 
 if __name__ == '__main__':
+    start_time = time()
     main()
+    print(f'Method took {time() - start_time} seconds.')
