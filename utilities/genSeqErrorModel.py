@@ -21,12 +21,12 @@ import pysam
 from functools import reduce
 
 # enables import from neighboring package
-# sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
+sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
 
 from source.probability import DiscreteDistribution
 
 
-def parse_fq(input_file, real_q, off_q, max_reads, n_samp, plot_stuff):
+def parse_file(input_file, real_q, off_q, max_reads, n_samp, plot_stuff):
     init_smooth = 0.
     prob_smooth = 0.
 
@@ -252,10 +252,10 @@ def main():
 
     q_scores = range(real_q)
     if inf2 == None:
-        (init_q, prob_q, avg_err) = parse_fq(inf, real_q, off_q, max_reads, n_samp, plot_stuff)
+        (init_q, prob_q, avg_err) = parse_file(inf, real_q, off_q, max_reads, n_samp, plot_stuff)
     else:
-        (init_q, prob_q, avg_err1) = parse_fq(inf, real_q, off_q, max_reads, n_samp, plot_stuff)
-        (init_q2, prob_q2, avg_err2) = parse_fq(inf2, real_q, off_q, max_reads, n_samp, plot_stuff)
+        (init_q, prob_q, avg_err1) = parse_file(inf, real_q, off_q, max_reads, n_samp, plot_stuff)
+        (init_q2, prob_q2, avg_err2) = parse_file(inf2, real_q, off_q, max_reads, n_samp, plot_stuff)
         avg_err = (avg_err1 + avg_err2) / 2.
 
     #
