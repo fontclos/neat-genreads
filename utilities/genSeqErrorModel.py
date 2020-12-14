@@ -244,7 +244,7 @@ def main():
                         help='perform some optional plotting')
     args = parser.parse_args()
 
-    (inf, ouf, off_q, max_q, max_reads, n_samp) = (args.i, args.o, args.q, args.Q, args.n, args.s)
+    (infile, outfile, off_q, max_q, max_reads, n_samp) = (args.i, args.o, args.q, args.Q, args.n, args.s)
     (inf2, pile_up) = (args.i2, args.p)
 
     real_q = max_q + 1
@@ -253,9 +253,9 @@ def main():
 
     q_scores = range(real_q)
     if inf2 == None:
-        (init_q, prob_q, avg_err) = parse_file(inf, real_q, off_q, max_reads, n_samp, plot_stuff)
+        (init_q, prob_q, avg_err) = parse_file(infile, real_q, off_q, max_reads, n_samp, plot_stuff)
     else:
-        (init_q, prob_q, avg_err1) = parse_file(inf, real_q, off_q, max_reads, n_samp, plot_stuff)
+        (init_q, prob_q, avg_err1) = parse_file(infile, real_q, off_q, max_reads, n_samp, plot_stuff)
         (init_q2, prob_q2, avg_err2) = parse_file(inf2, real_q, off_q, max_reads, n_samp, plot_stuff)
         avg_err = (avg_err1 + avg_err2) / 2.
 
@@ -293,11 +293,12 @@ def main():
     #
     #	finally, let's save our output model
     #
+    outfile = pathlib.Path(outfile).with_suffix(".p")
     print('saving model...')
     if inf2 == None:
-        pickle.dump([init_q, prob_q, q_scores, off_q, avg_err, err_params], open(ouf, 'wb'))
+        pickle.dump([init_q, prob_q, q_scores, off_q, avg_err, err_params], open(outfile, 'wb'))
     else:
-        pickle.dump([init_q, prob_q, init_q2, prob_q2, q_scores, off_q, avg_err, err_params], open(ouf, 'wb'))
+        pickle.dump([init_q, prob_q, init_q2, prob_q2, q_scores, off_q, avg_err, err_params], open(outfile, 'wb'))
 
 
 if __name__ == '__main__':
