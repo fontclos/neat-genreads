@@ -206,10 +206,11 @@ def parse_file(input_file, real_q, off_q, max_reads, n_samp, plot_stuff):
     count_dict = {}
     for q in q_scores:
         count_dict[q] = 0
-    samp_quarters = len(range(1, n_samp + 1)) // 4
+    lines_to_sample = len(range(1, n_samp + 1))
+    samp_quarters = lines_to_sample // 4
     for samp in range(1, n_samp + 1):
         if samp % samp_quarters == 0:
-            print(f'{(samp/samp_quarters)*100:.0f}%')
+            print(f'{(samp/lines_to_sample)*100:.0f}%')
         my_q = init_dist_by_pos[0].sample()
         count_dict[my_q] += 1
         for i in range(1, len(init_q)):
