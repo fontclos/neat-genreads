@@ -17,6 +17,7 @@ import argparse
 import sys
 import pickle
 import matplotlib.pyplot as mpl
+import pathlib
 import pysam
 from functools import reduce
 
